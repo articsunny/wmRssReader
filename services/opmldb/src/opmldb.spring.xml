@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<beans xsi:schemaLocation="http://schema.cloudfoundry.org/spring http://schema.cloudfoundry.org/spring/cloudfoundry-spring-0.8.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" xmlns="http://www.springframework.org/schema/beans" xmlns:cloud="http://schema.cloudfoundry.org/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <bean class="com.opmldb.Opmldb" scope="singleton" lazy-init="true" id="opmldb">
+        <property name="dataServiceManager">
+            <ref bean="opmldbDataService"/>
+        </property>
+        <property name="taskManager">
+            <ref bean="opmldbTaskMgr"/>
+        </property>
+    </bean>
+    <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:opmldb.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" lazy-init="true" id="opmldbDataSource">
+        <property name="driverClassName" value="${opmldb.driverClassName}"/>
+        <property name="url" value="${opmldb.connectionUrl}"/>
+        <property name="username" value="${opmldb.username}"/>
+        <property name="password" value="${opmldb.password}"/>
+    </bean>
+    <bean class="org.springframework.orm.hibernate3.HibernateTransactionManager" lazy-init="true" id="opmldbTxMgr">
+        <property name="sessionFactory">
+            <ref bean="opmldbSessionFactory"/>
+        </property>
+    </bean>
+    <bean class="org.springframework.orm.hibernate3.HibernateTemplate" lazy-init="true" id="opmldbHibernateTemplate">
+        <property name="sessionFactory">
+            <ref bean="opmldbSessionFactory"/>
+        </property>
+    </bean>
+    <bean class="com.wavemaker.runtime.data.spring.ConfigurationAndSessionFactoryBean" lazy-init="true" id="opmldbSessionFactory">
+        <property name="name" value="opmldb"/>
+        <property name="dataSource" ref="opmldbDataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${opmldb.dialect}</prop>
+                <prop key="hibernate.transaction.factory_class">
+                    org.hibernate.transaction.JDBCTransactionFactory
+                </prop>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.jdbc.batch_size">0</prop>
+            </props>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>com/opmldb/data/Folder.hbm.xml</value>
+                <value>com/opmldb/data/Subscription.hbm.xml</value>
+                <value>com/opmldb/data/app-queries.ql.xml</value>
+            </list>
+        </property>
+    </bean>
+    <bean class="com.wavemaker.runtime.data.spring.SpringDataServiceManager" lazy-init="true" id="opmldbDataService">
+        <constructor-arg>
+            <value>opmldb</value>
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="opmldbHibernateTemplate"/>
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="opmldbTxMgr"/>
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="opmldbTaskMgr"/>
+        </constructor-arg>
+        <constructor-arg>
+            <map>
+                <entry key="useIndividualCRUDOperations" value="false"/>
+                <entry key="refreshEntities" value=""/>
+            </map>
+        </constructor-arg>
+    </bean>
+    <bean class="com.wavemaker.runtime.data.DefaultTaskManager" lazy-init="true" id="opmldbTaskMgr"/>
+    <bean class="com.wavemaker.runtime.service.events.EventWire" lazy-init="false">
+        <property name="serviceWire" ref="opmldbServiceWire"/>
+        <property name="eventListener">
+            <bean class="com.wavemaker.runtime.data.DataServiceEventListener"/>
+        </property>
+    </bean>
+    <bean class="com.wavemaker.runtime.service.reflect.ReflectServiceWire" scope="singleton" lazy-init="false" id="opmldbServiceWire">
+        <property name="serviceId" value="opmldb"/>
+        <property name="serviceType" ref="DataService"/>
+    </bean>
+</beans>

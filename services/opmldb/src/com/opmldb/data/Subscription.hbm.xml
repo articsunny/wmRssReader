@@ -1,0 +1,24 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.opmldb.data.Subscription" table="SUBSCRIPTION" schema="PUBLIC" dynamic-insert="false" dynamic-update="false">
+        <id name="SUBSCRIPTIONID" type="integer">
+            <column name="SUBSCRIPTIONID"/>
+            <generator class="identity"/>
+        </id>
+        <property name="title" type="string">
+            <column name="TITLE" not-null="true"/>
+        </property>
+        <property name="xmlurl" type="string">
+            <column name="XMLURL" not-null="true"/>
+        </property>
+        <property name="htmlurl" type="string">
+            <column name="HTMLURL" not-null="true"/>
+        </property>
+        <property name="type" type="string">
+            <column name="TYPE" not-null="true"/>
+        </property>
+        <many-to-one name="Folder" class="com.opmldb.data.Folder" cascade="none">
+            <column name="FOLDERID" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

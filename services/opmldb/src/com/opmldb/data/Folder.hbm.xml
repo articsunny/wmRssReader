@@ -1,0 +1,18 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.opmldb.data.Folder" table="Folder" schema="PUBLIC" dynamic-insert="false" dynamic-update="false">
+        <id name="FOLDERID" type="integer">
+            <column name="FOLDERID"/>
+            <generator class="identity"/>
+        </id>
+        <property name="FOLDERNAME" type="string">
+            <column name="FOLDERNAME" not-null="true"/>
+        </property>
+        <set name="subscriptions" inverse="true" cascade="">
+            <key>
+                <column name="FOLDERID" not-null="true"/>
+            </key>
+            <one-to-many class="com.opmldb.data.Subscription"/>
+        </set>
+    </class>
+</hibernate-mapping>

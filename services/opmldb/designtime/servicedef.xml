@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<service xmlns="http://www.activegrid.com/namespaces/ServiceDefinitions/1.0" id="opmldb" class="com.opmldb.Opmldb" CRUDService="true" type="DataService" springFile="opmldb.spring.xml">
+    <dataobjects>
+        <dataobject javaType="com.opmldb.data.Folder" supportsQuickData="true">
+            <element name="FOLDERID" typeRef="java.lang.Integer" isList="false" allowNull="false">
+                <require>delete</require>
+                <require>read</require>
+                <require>update</require>
+                <noChange>delete</noChange>
+                <noChange>read</noChange>
+                <noChange>update</noChange>
+                <exclude>insert</exclude>
+            </element>
+            <element name="FOLDERNAME" typeRef="java.lang.String" isList="false" allowNull="false"/>
+            <element name="subscriptions" typeRef="com.opmldb.data.Subscription" isList="true" allowNull="true"/>
+        </dataobject>
+        <dataobject javaType="com.opmldb.data.Subscription" supportsQuickData="true">
+            <element name="SUBSCRIPTIONID" typeRef="java.lang.Integer" isList="false" allowNull="false">
+                <require>delete</require>
+                <require>read</require>
+                <require>update</require>
+                <noChange>delete</noChange>
+                <noChange>read</noChange>
+                <noChange>update</noChange>
+                <exclude>insert</exclude>
+            </element>
+            <element name="title" typeRef="java.lang.String" isList="false" allowNull="false"/>
+            <element name="xmlurl" typeRef="java.lang.String" isList="false" allowNull="false"/>
+            <element name="htmlurl" typeRef="java.lang.String" isList="false" allowNull="false"/>
+            <element name="type" typeRef="java.lang.String" isList="false" allowNull="false"/>
+            <element name="Folder" typeRef="com.opmldb.data.Folder" isList="false" allowNull="false"/>
+        </dataobject>
+    </dataobjects>
+</service>
